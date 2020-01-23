@@ -60,6 +60,30 @@ namespace VerbalExpressionsUnitTests
         }
 
         [Test]
+        public void Range_MultipleRanges_ShouldResult()
+        {
+            var email = "JStephens@testsite.com";
+
+            var t = VerbalExpressions.DefaultExpression;
+            //regex [A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
+
+            //t.Range('A', 'Z' ,'a', 'z', 0, 9, '.', '_', '%', '+', '-');
+
+            t.Range(p => 
+                p.R('A', 'Z')
+                    .R('a', 'z')
+                    .R(0, 9)
+                    .R('.',false)
+                    .R('_')
+                    .R('%')
+                    .R('+',false)
+                    .R('-'));
+
+            Assert.AreEqual("[A-Za-z0-9._%+-]",t.ToString());
+        }
+
+
+        [Test]
         public void Range_WhenArrayParameterHasOnlyOneValue_ShouldThrowArgumentOutOfRangeException()
         {
             //Arrange

@@ -42,14 +42,14 @@ namespace CSharpVerbalExpressions
         private StringBuilder _suffixes = new StringBuilder();
 
         private RegexOptions _modifiers = RegexOptions.Multiline;
-        
+
         #endregion Private Members
 
         #region Private Properties
 
         private string RegexString
         {
-            get { return new StringBuilder().Append(_prefixes).Append(_source).Append(_suffixes).ToString();}
+            get { return new StringBuilder().Append(_prefixes).Append(_source).Append(_suffixes).ToString(); }
         }
 
         private Regex PatternRegex
@@ -58,7 +58,7 @@ namespace CSharpVerbalExpressions
         }
 
         #endregion Private Properties
-        
+
         #region Public Methods
 
         #region Helpers
@@ -235,6 +235,51 @@ namespace CSharpVerbalExpressions
             return AnyOf(value);
         }
 
+        public class RangeExpression
+        {
+            private string result = "";
+            public string Sanitize(string value)
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException("value");
+                }
+
+                return Regex.Escape(value);
+            }
+            public RangeExpression R(object character, bool sanitize = true)
+            {
+                if (sanitize) character = Sanitize(character.ToString());
+                result += character;
+                return this;
+            }
+            public RangeExpression R(object from, object to, bool sanitize = true)
+            {
+                if (sanitize)
+                {
+                    from = Sanitize(from.ToString());
+                    to = Sanitize(to.ToString());
+                }
+                result += $"{from}-{to}";
+                return this;
+            }
+
+            public override string ToString()
+            {
+                return $"[{result}]";
+            }
+        }
+        public VerbalExpressions Range(Func<RangeExpression, RangeExpression> range)
+        {
+            return Add(range(new RangeExpression()).ToString(), false);
+        }
+
+
+        /// <summary>
+        /// Matches a range of characters.  Such as [A-z].  Each argument (A & z) are specified individually.
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
         public VerbalExpressions Range(params object[] arguments)
         {
             if (object.ReferenceEquals(arguments, null))
